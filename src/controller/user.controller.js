@@ -139,4 +139,25 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, 'User logged Out Successfully!!'));
 });
 
-export { registerUser, loginUser, logoutUser };
+//  Change password
+
+const changePassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user?._id);
+  const isPasswordCorrect = user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(401, 'Unauthorized Access!!');
+  }
+
+  user.password = newPassword;
+
+  await user.save({ validateBeforeSave: false });
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, {}, 'Password Changed Succesfully!!'));
+});
+
+export { registerUser, loginUser, logoutUser, changePassword };
