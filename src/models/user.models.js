@@ -2,6 +2,8 @@ import mongoose, { Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+//User model
+
 const userSchema = new Schema(
   {
     fullName: {
@@ -27,6 +29,10 @@ const userSchema = new Schema(
       type: String,
       required: [true, 'password is required'],
     },
+    secret: {
+      type: String,
+      required: true,
+    },
     refreshToken: {
       type: String,
     },
@@ -34,14 +40,32 @@ const userSchema = new Schema(
   { timestamps: true },
 );
 
+// Save and convert the password in hash
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
+// check password is correct
+
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
+};
+
+// Save the secret in hash format
+
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('secret')) return next();
+  this.secret = await bcrypt.hash(this.secret, 10);
+  next();
+});
+
+// verify secret while forget password
+
+userSchema.methods.verifySecret = async function (secret) {
+  return await bcrypt.compare(secret, this.secret);
 };
 
 userSchema.methods.createAccessWebToken = function () {
