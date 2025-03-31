@@ -6,7 +6,7 @@ dotenv.config();
 
 dbConnection()
   .then(() => {
-    app.listen(process.env.PORT || 8000, () => {
+    app.listen(process.env.PORT || 4000, () => {
       console.log(`app is listening no Port: ${process.env.PORT}`);
     });
   })
