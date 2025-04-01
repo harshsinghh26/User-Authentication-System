@@ -6,6 +6,7 @@ const asyncHandler = (requestHanler) => async (req, res, next) => {
       success: false,
       message: error.message,
     });
+    process.exit(1);
   }
 };
 
